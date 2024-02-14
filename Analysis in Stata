@@ -1,0 +1,207 @@
+use "\\Client\C$\Combined_data.dta"
+*Outcome - CHD
+tab MCQ160C
+g chd= MCQ160C if MCQ160C==1| MCQ160C==2
+tab chd
+recode chd 1=1 2=0
+tab chd
+*Predictor - Depression
+tab DPQ100
+g phq1= DPQ010
+recode phq1 7/9=.
+tab phq1
+tab DPQ010
+g phq2= DPQ020
+recode phq2 7/9=.
+g phq3= DPQ030
+recode phq3 7/9=.
+g phq4= DPQ040
+recode phq4 7/9=.
+g phq5= DPQ050
+recode phq5 7/9=.
+g phq6= DPQ060
+recode phq5 7/9=.
+recode phq6 7/9=.
+g phq7= DPQ070
+recode phq7 7/9=.
+g phq8= DPQ080
+recode phq8 7/9=.
+g phq9= DPQ090
+recode phq9 7/9=.
+sum phq1 phq2 phq3 phq4 phq5 phq6 phq7 phq8 phq9
+g phq_sc= phq1 +phq2 +phq3 +phq4 +phq5 +phq6 +phq7 +phq8 +phq9
+sum phq_s
+g phq_cat= phq_sc
+recode phq_cat 1/4=0 5/9=1 10/14=2 15/19=3 20/27=4
+tab phq_cat
+g phq_cat2= phq_cat
+recode phq_cat2 3=2 4=2
+tab phq_cat2
+label define phq_sc2 0 "Minimal" 1 "Mild" 2 "Moderate to severe"
+label values phq_cat2 phq_sc2
+tab phq_cat2
+*Metal levels Urine
+*Cadmium
+g cd_urine= URXUCD
+sum cd_urine
+g cd_urine_cat=cd_urine
+recode cd_urine_cat 0/0.599999=0 0.60/0.77999=1 0.78/8=2
+tab cd_urine_cat
+*Lead
+g pb_urine =URXUPB
+sum pb_urine
+g pb_urine_cat =pb_urine
+recode pb_urine_cat 0/0.73=0 0.731/1.26=1 1.261/20=2
+tab pb_urine_cat
+tab pb_urine_cat if chd==0|chd==1
+tab pb_urine_cat chd, row chi2
+*Manganese
+g mn_urine= URXUMN
+sum mn_urine
+g mn_urine_cat=mn_urine
+recode mn_urine_cat 0.00/1.00=0 1.01/8.00=1 8.01/11.844=2
+sum mn_urine_cat
+tab mn_urine_cat
+*Metal levels Blood
+*Cadmium
+g cd_blood= LBXBCD
+sum cd_blood
+g cd_blood_cat= cd_blood
+recode cd_blood_cat 0/0.1=0 0.10/4.00=1 4.01/13.03=2
+sum cd_blood_cat
+*Lead
+g pb_blood= LBXBPB
+tab pb_blood
+sum pb_blood
+g pb_blood_cat= pb_blood
+recode pb_blood_cat 0.049/3.499=0 3.500/5.000=1 5.001/42.48=2
+sum pb_blood_cat
+*Manganese
+g mn_blood= LBXBMN
+tab mn_blood
+sum mn_blood
+g mn_blood_cat=mn_blood
+recode mn_blood_cat 1.57/4.73=0 4.74/17.00=1 17.01/53.69=2
+sum mn_blood_cat
+*Diabetes
+g dia = DIQ010
+sum dia
+g dia_cat=dia if DIQ010==1 | DIQ010==2
+sum dia_cat
+recode dia_cat 1=1 2=0
+sum dia_cat
+*Blood Pressure
+g hbp= BPQ020
+sum hbp
+g hbp_cat=hbp if hbp==1|hbp==2
+sum hbp_cat
+recode hbp_cat 1=1 2=0
+sum hbp_cat
+*High Cholestrol
+g hchl = BPQ080
+sum hchl
+g hchl_cat=hchl if hchl==1 | hchl == 2
+recode hchl_cat 1=1 2=0
+sum hchl_cat
+*Obesity
+g bmi = BMXBMI
+sum bmi
+g bmi_cat=bmi
+recode bmi_cat 0/18.49=0 18.50/24.99 =1 25.00/29.99=2 30.00/93.00=3 
+sum bmi_cat
+label define bmi_cat 0 "Underweight" 1 "Healthyweight" 2 "Overweight" 3 "Obese", replace
+label values bmi_cat bmi_cat
+tab bmi_cat
+tab bmi_cat if chd==0|chd==1
+tab bmi_cat chd,row chi2
+*Smoking
+sum SMQ020
+gen smk= SMQ020
+g smk_sta= SMQ020 if SMQ020==1 | SMQ020==2
+recode smk_sta 1=1 2=0
+sum smk_sta
+*Physical activity
+g pa = PAQ605
+sum pa
+g pa_sta= PAQ605 if PAQ605==1| PAQ605==2
+sum pa_sta
+recode pa_sta 1=1 2=0
+tab pa_sta
+*Age
+sum RIDAGEYR
+tab RIDAGEYR
+gen age= RIDAGEYR
+g age_cat =age
+recode age_cat 0/60=1 60/69=2 70/79=3 80/85=4
+tab age_cat
+*Gender
+sum RIAGENDR
+g gender=RIAGENDR
+recode gender 1=1 2=0
+sum gender
+*Race/ Ethnicity
+sum RIDRETH1
+gen race = RIDRETH1
+sum race
+tab race
+*Diet
+*Fat
+sum DR1TTFAT
+g diet_fat = DR1TTFAT
+recode diet_fat 0/79.00=0 79.01/567.96=1
+tab diet_fat
+sum diet_fat
+*Sugar
+g Diet_sugar = DR1TSUGR
+recode Diet_sugar 0/90=0 90.01/931.16=1
+sum Diet_sugar
+*History of Heart Disease
+g hhd= MCQ300A if MCQ300A==1| MCQ300A==2
+sum hhd
+recode hhd 1=1 2=0
+tab hhd
+*Alcohol Consumption
+g alcohol= ALQ111
+recode alcohol 1=1 2=0
+tab alcohol
+*Marital Status
+g ms = DMDMARTZ
+replace ms=. if ms==77 | ms==99
+tab ms
+*Rename label and values.
+
+label define ms 1 "Married" 2 "Widowed/ Divorced/ Separated" 3 "Never married"
+label values ms ms
+label define race 1 "Mexican American" 2 "Other Hispanic" 3 "Non-Hispanic White" 4 "Non-Hispanic Black" 5 "Other race- Multi-racial"
+label values race race
+label define Age 1 "<60 years" 2 "60-69 years" 3 "70-79 years" 4 "greater than 0r equal to 80 years"
+label values age_cat Age
+label define cat_um_bl 0 "Low" 1 "Normal" 2 "High"
+label values mn_blood_cat cd_blood_cat mn_urine_cat pb_blood_cat pb_urine_cat cat_um_bl
+label values cd_urine_cat cat_um_bl
+
+*Correlation matrix and vif check:
+corr phq_cat2 pb_blood_cat cd_blood_cat mn_blood_cat pb_urine_cat cd_urine_cat mn_urine_cat
+regress chd phq_cat2 pb_blood_cat mn_blood_cat cd_blood_cat pb_urine_cat cd_urine_cat mn_urine_cat
+vif
+
+*Generate predicted probabilities and residuals
+predict prob, pr
+predict residuals, residual
+
+*Residual Plot for Homoscedasticity
+scatter residuals prob, yline(0) title("Residual Plot for Homoscedasticity") 
+
+*QQ plot for normality check
+qnorm residuals, title("QQ plot for normality of residuals")
+
+*Shapiro wilk test
+swilk residuals
+
+*Best model for blood metal levels:
+logit chd i.phq_cat2 i.cd_blood_cat i.pb_blood_cat i.mn_blood_cat dia_cat hbp_cat hchl_cat i.bmi_cat smk_sta pa_sta i.age_cat gender i.race diet_fat Diet_sugar hhd alcohol i.ms i.phq_cat2#i.age_cat i.phq_cat2#i.pb_blood_cat,or
+estat ic
+
+*Best model for urine metal levels:
+logit chd i.phq_cat2 cd_urine_cat pb_urine_cat dia_cat hbp_cat hchl_cat i.bmi_cat smk_sta pa_sta i.age_cat gender i.race diet_fat Diet_sugar hhd alcohol i.ms i.phq_cat2#i.cd_urine_cat i.phq_cat2#i.pb_urine_cat smk_sta#i.phq_cat2 i.cd_urine_cat#dia_cat i.pb_urine_cat#dia_cat,or
+estat ic
