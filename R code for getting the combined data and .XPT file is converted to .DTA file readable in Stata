@@ -1,0 +1,21 @@
+Code to get dta file from xpt files.
+# Load the haven package
+library(haven)
+
+# List of .xpt files
+xpt_files <- c("C:/Users/jayan/Downloads/Data/P_MCQ.XPT","C:/Users/jayan/Downloads/Data/P_DPQ.XPT", "C:/Users/jayan/Downloads/Data/P_UM.XPT","C:/Users/jayan/Downloads/Data/P_PBCD.XPT","C:/Users/jayan/Downloads/Data/P_DEMO.XPT","C:/Users/jayan/Downloads/Data/P_TCHOL.XPT","C:/Users/jayan/Downloads/Data/P_BPXO.XPT","C:/Users/jayan/Downloads/Data/P_SMQ.XPT","C:/Users/jayan/Downloads/Data/P_ALQ.XPT","C:/Users/jayan/Downloads/Data/P_PAQ.XPT","C:/Users/jayan/Downloads/Data/P_DIQ.XPT","C:/Users/jayan/Downloads/Data/P_BPQ.XPT","C:/Users/jayan/Downloads/Data/P_BMX.XPT","C:/Users/jayan/Downloads/Data/P_DR1TOT.XPT")  # Replace with your file names
+
+# Initialize an empty list to store data frames
+list_of_dataframes <- list()
+
+# Read each .xpt file into a data frame and store it in the list
+for (file in xpt_files) {
+  df <- read_xpt(file)
+  list_of_dataframes[[file]] <- df
+}
+
+# Combine the list of data frames into a single data frame
+combined_df <- Reduce(function(x, y) merge(x, y, by = "SEQN", all = TRUE), list_of_dataframes)
+
+# Write the combined data frame to a .dta file
+write_dta(combined_df, "C:/Users/jayan/OneDrive/Desktop/Discrete Project/Data/Merge Data/Combined_data.dta")
